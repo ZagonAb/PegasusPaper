@@ -18,6 +18,8 @@ Item {
 
     SoundManager { id: sfx }
 
+    Fonts { id: theFonts }
+
     signal requestFocus()
     signal requestBack()
     signal toggleTheme()
@@ -65,7 +67,7 @@ Item {
             anchors.leftMargin: vpx(24)
             anchors.verticalCenter: parent.verticalCenter
             text: "GAMES"
-            font.family: global.fonts.condensed
+            font.family: theFonts.publicSans
             font.pixelSize: vpx(11)
             font.letterSpacing: vpx(4)
             color: inkFaint
@@ -76,7 +78,7 @@ Item {
             anchors.rightMargin: vpx(24)
             anchors.verticalCenter: parent.verticalCenter
             text: collectionModel ? collectionModel.games.count : "0"
-            font.family: global.fonts.condensed
+            font.family: theFonts.publicSans
             font.pixelSize: vpx(11)
             color: inkFaint
         }
@@ -164,7 +166,7 @@ Item {
                 Text {
                     width: parent.width
                     text: Util.cleanGameTitle(modelData.title)
-                    font.family: global.fonts.sans
+                    font.family: theFonts.publicSans
                     font.pixelSize: isSelected ? vpx(16) : vpx(14)
                     font.bold: isSelected
                     color: isSelected ? inkBlack : inkMid
@@ -175,7 +177,7 @@ Item {
                 Text {
                     width: parent.width
                     text: Util.buildMeta(modelData)
-                    font.family: global.fonts.condensed
+                    font.family: theFonts.lora
                     font.pixelSize: vpx(11)
                     color: inkLight
                     elide: Text.ElideRight
@@ -262,7 +264,7 @@ Item {
     Text {
         anchors.centerIn: parent
         text: "No games in this collection"
-        font.family: global.fonts.condensed
+        font.family: theFonts.publicSans
         font.pixelSize: vpx(14)
         font.letterSpacing: vpx(2)
         color: inkFaint

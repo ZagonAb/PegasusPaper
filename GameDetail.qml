@@ -18,12 +18,14 @@ Item {
 
     SoundManager { id: sfx }
 
+    Fonts { id: theFonts }
+
     Rectangle { anchors.fill: parent; color: bgColor }
 
     Text {
         anchors.centerIn: parent
         text: "← Select a game"
-        font.family: global.fonts.condensed
+        font.family: theFonts.publicSansSans
         font.pixelSize: vpx(14)
         font.letterSpacing: vpx(3)
         color: inkFaint
@@ -134,7 +136,7 @@ Item {
                                 Text {
                                     anchors.centerIn: parent
                                     text: "▶  PLAY"
-                                    font.family: global.fonts.condensed
+                                    font.family: theFonts.publicSansSans
                                     font.pixelSize: vpx(13)
                                     font.letterSpacing: vpx(3)
                                     color: btnMouse.containsMouse ? bgColor : inkBlack
@@ -204,7 +206,7 @@ Item {
                                 anchors.left: favBtn.right
                                 anchors.leftMargin: vpx(14)
                                 anchors.verticalCenter: parent.verticalCenter
-                                font.family: global.fonts.condensed
+                                font.family: theFonts.publicSansSans
                                 font.pixelSize: vpx(12)
                                 font.letterSpacing: vpx(2)
                                 color: inkMid
@@ -222,7 +224,7 @@ Item {
                         Text {
                             width: parent.width
                             text: game ? Util.cleanGameTitle(game.title) : ""
-                            font.family: global.fonts.sans
+                            font.family: theFonts.publicSansSans
                             font.pixelSize: vpx(24)
                             font.bold: true
                             color: inkBlack
@@ -232,7 +234,7 @@ Item {
                         Text {
                             width: parent.width
                             text: game ? Util.buildMeta(game) : ""
-                            font.family: global.fonts.condensed
+                            font.family: theFonts.lora
                             font.pixelSize: vpx(14)
                             font.letterSpacing: vpx(1)
                             color: inkMid
@@ -255,7 +257,7 @@ Item {
 
                             Text {
                                 text: "  •  ♥ FAVORITE"
-                                font.family: global.fonts.condensed
+                                font.family: theFonts.publicSansSans
                                 font.pixelSize: vpx(12)
                                 font.letterSpacing: vpx(3)
                                 color: inkMid
@@ -279,7 +281,7 @@ Item {
                         model: [
                             { label: "DEVELOPER",  value: game ? game.developer  : "" },
                             { label: "PUBLISHER",  value: game ? game.publisher  : "" },
-                            { label: "GENRE",      value: game ? game.genre      : "" },
+                            { label: "GENRE",      value: game ? Util.getFirstGenre(game)      : "" },
                             { label: "PLAYERS",    value: game && game.players > 1
                                 ? "1 – " + game.players
                                 : (game ? "1" : "") },
@@ -301,7 +303,7 @@ Item {
 
                                 Text {
                                     text: modelData.label
-                                    font.family: global.fonts.condensed
+                                    font.family: theFonts.publicSansSans
                                     font.pixelSize: vpx(12)
                                     font.letterSpacing: vpx(3)
                                     color: inkFaint
@@ -309,7 +311,7 @@ Item {
                                 Text {
                                     width: parent.width
                                     text: modelData.value
-                                    font.family: global.fonts.sans
+                                    font.family: theFonts.lora
                                     font.pixelSize: vpx(16)
                                     color: inkMid
                                     elide: Text.ElideRight
@@ -377,7 +379,7 @@ Item {
                                     Text {
                                         width: parent.width
                                         text: game ? game.summary : ""
-                                        font.family: global.fonts.sans
+                                        font.family: theFonts.lora
                                         font.pixelSize: vpx(16)
                                         font.bold: true
                                         color: inkDark
@@ -389,7 +391,7 @@ Item {
                                     Text {
                                         width: parent.width
                                         text: game ? game.description : ""
-                                        font.family: global.fonts.sans
+                                        font.family: theFonts.lora
                                         font.pixelSize: vpx(16)
                                         color: inkMid
                                         wrapMode: Text.WordWrap

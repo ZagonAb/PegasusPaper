@@ -20,6 +20,8 @@ Item {
 
     SoundManager { id: sfx }
 
+    Fonts { id: theFonts }
+
     function moveUp() {
         var next = Math.max(0, list.currentIndex - 1)
         list.currentIndex = next
@@ -62,7 +64,7 @@ Item {
             anchors.leftMargin: vpx(24)
             anchors.verticalCenter: parent.verticalCenter
             text: "COLLECTIONS"
-            font.family: global.fonts.condensed
+            font.family: theFonts.publicSans
             font.pixelSize: vpx(11)
             font.letterSpacing: vpx(4)
             color: inkFaint
@@ -73,7 +75,7 @@ Item {
             anchors.rightMargin: vpx(24)
             anchors.verticalCenter: parent.verticalCenter
             text: api.collections.count
-            font.family: global.fonts.condensed
+            font.family: theFonts.publicSans
             font.pixelSize: vpx(11)
             color: inkFaint
         }
@@ -172,7 +174,7 @@ Item {
                 anchors.rightMargin: vpx(6)
                 anchors.verticalCenter: parent.verticalCenter
                 text: modelData.name
-                font.family: global.fonts.sans
+                font.family: theFonts.publicSans
                 font.pixelSize: isSelected ? vpx(17) : vpx(15)
                 font.bold: isSelected
                 color: isSelected ? inkBlack : inkMid
@@ -186,7 +188,7 @@ Item {
                 anchors.rightMargin: vpx(14)
                 anchors.verticalCenter: parent.verticalCenter
                 text: modelData.games.count
-                font.family: global.fonts.condensed
+                font.family: theFonts.publicSans
                 font.pixelSize: vpx(11)
                 color: isSelected ? inkLight : inkFaint
             }

@@ -9,6 +9,8 @@ Item {
 
     SoundManager { id: sfx }
 
+    Fonts { id: theFonts }
+
     property bool darkMode: false
 
     Component.onCompleted: {
@@ -85,7 +87,7 @@ Item {
                 anchors.leftMargin: vpx(32)
                 anchors.verticalCenter: parent.verticalCenter
                 text: "PEGASUS PAPER"
-                font.family: global.fonts.condensed
+                font.family: theFonts.publicSans
                 font.pixelSize: vpx(18)
                 font.letterSpacing: vpx(6)
                 color: bgColor
@@ -136,7 +138,7 @@ Item {
                 anchors.centerIn: parent
                 text: collectionPanel.currentCollection
                 ? collectionPanel.currentCollection.name.toUpperCase() : ""
-                font.family: global.fonts.condensed
+                font.family: theFonts.publicSans
                 font.pixelSize: vpx(13)
                 font.letterSpacing: vpx(5)
                 color: inkFaint
@@ -147,7 +149,7 @@ Item {
                 anchors.right: parent.right
                 anchors.rightMargin: vpx(32)
                 anchors.verticalCenter: parent.verticalCenter
-                font.family: global.fonts.condensed
+                font.family: theFonts.publicSans
                 font.pixelSize: vpx(15)
                 font.letterSpacing: vpx(3)
                 color: inkFaint
@@ -299,7 +301,7 @@ Item {
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             text: modelData.label
-                            font.family: global.fonts.condensed
+                            font.family: theFonts.publicSans
                             font.pixelSize: vpx(14)
                             font.letterSpacing: vpx(3)
                             color: isSelected ? inkBlack : inkFaint
@@ -354,7 +356,7 @@ Item {
                         Text {
                             anchors.verticalCenter: parent.verticalCenter
                             text: "PEGASUS MENU"
-                            font.family: global.fonts.condensed
+                            font.family: theFonts.publicSans
                             font.pixelSize: vpx(14)
                             font.letterSpacing: vpx(3)
                             color: inkFaint
@@ -363,7 +365,7 @@ Item {
                     Text {
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: "[ B / Cancel ]"
-                        font.family: global.fonts.condensed
+                        font.family: theFonts.publicSans
                         font.pixelSize: vpx(10)
                         font.letterSpacing: vpx(2)
                         color: inkFaint
