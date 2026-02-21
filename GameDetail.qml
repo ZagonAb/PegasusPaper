@@ -25,7 +25,7 @@ Item {
     Text {
         anchors.centerIn: parent
         text: "← Select a game"
-        font.family: theFonts.publicSansSans
+        font.family: theFonts.publicSans
         font.pixelSize: vpx(14)
         font.letterSpacing: vpx(3)
         color: inkFaint
@@ -136,7 +136,7 @@ Item {
                                 Text {
                                     anchors.centerIn: parent
                                     text: "▶  PLAY"
-                                    font.family: theFonts.publicSansSans
+                                    font.family: theFonts.publicSans
                                     font.pixelSize: vpx(13)
                                     font.letterSpacing: vpx(3)
                                     color: btnMouse.containsMouse ? bgColor : inkBlack
@@ -206,7 +206,7 @@ Item {
                                 anchors.left: favBtn.right
                                 anchors.leftMargin: vpx(14)
                                 anchors.verticalCenter: parent.verticalCenter
-                                font.family: theFonts.publicSansSans
+                                font.family: theFonts.publicSans
                                 font.pixelSize: vpx(12)
                                 font.letterSpacing: vpx(2)
                                 color: inkMid
@@ -224,7 +224,7 @@ Item {
                         Text {
                             width: parent.width
                             text: game ? Util.cleanGameTitle(game.title) : ""
-                            font.family: theFonts.publicSansSans
+                            font.family: theFonts.publicSans
                             font.pixelSize: vpx(24)
                             font.bold: true
                             color: inkBlack
@@ -257,7 +257,7 @@ Item {
 
                             Text {
                                 text: "  •  ♥ FAVORITE"
-                                font.family: theFonts.publicSansSans
+                                font.family: theFonts.publicSans
                                 font.pixelSize: vpx(12)
                                 font.letterSpacing: vpx(3)
                                 color: inkMid
@@ -303,7 +303,7 @@ Item {
 
                                 Text {
                                     text: modelData.label
-                                    font.family: theFonts.publicSansSans
+                                    font.family: theFonts.publicSans
                                     font.pixelSize: vpx(12)
                                     font.letterSpacing: vpx(3)
                                     color: inkFaint

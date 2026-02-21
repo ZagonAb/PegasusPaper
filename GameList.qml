@@ -2,6 +2,7 @@ import QtQuick 2.15
 import SortFilterProxyModel 0.2
 import "util.js" as Util
 
+
 Item {
     id: root
 
@@ -68,10 +69,22 @@ Item {
         savedIndex = 0
         list.currentIndex = hasFocus ? 0 : -1
         if (filteredModel.count > 0) {
-            currentGame = filteredModel.get(0)
+            currentGame = _resolveRealGame(0)
         } else {
             currentGame = null
         }
+    }
+
+    function _resolveRealGame(proxyIndex) {
+        if (!collectionModel) return null
+            var proxy = filteredModel.get(proxyIndex)
+            if (!proxy) return null
+                var targetTitle = proxy.title
+                for (var i = 0; i < collectionModel.games.count; i++) {
+                    var real = collectionModel.games.get(i)
+                    if (real && real.title === targetTitle) return real
+                }
+                return proxy
     }
 
     SoundManager { id: sfx }
@@ -92,7 +105,23 @@ Item {
         savedIndex = next
     }
     function launchCurrent()  { if (currentGame) currentGame.launch() }
-    function toggleFavorite() { if (currentGame) currentGame.favorite = !currentGame.favorite }
+    function toggleFavorite() {
+        if (!currentGame) return
+            currentGame.favorite = !currentGame.favorite
+            if (activeFilter === 1) {
+                Qt.callLater(function() {
+                    if (filteredModel.count === 0) {
+                        activeFilter = 0
+                        _resetListIndex()
+                    } else {
+                        var safeIdx = Math.min(savedIndex, filteredModel.count - 1)
+                        list.currentIndex = safeIdx
+                        savedIndex = safeIdx
+                        currentGame = _resolveRealGame(safeIdx)
+                    }
+                })
+            }
+    }
 
     property int savedIndex: 0
 
@@ -108,12 +137,8 @@ Item {
     onCollectionModelChanged: {
         activeFilter = 0
         savedIndex   = 0
-        if (filteredModel.count > 0) {
-            currentGame = filteredModel.get(0)
-        } else {
-            currentGame = (collectionModel && collectionModel.games.count > 0)
-            ? collectionModel.games.get(0) : null
-        }
+        currentGame  = (collectionModel && collectionModel.games.count > 0)
+        ? collectionModel.games.get(0) : null
     }
 
     SortFilterProxyModel {
@@ -415,7 +440,7 @@ Item {
 
         onCurrentIndexChanged: {
             if (currentIndex >= 0) {
-                var g = filteredModel.get(currentIndex)
+                var g = root._resolveRealGame(currentIndex)
                 if (g) {
                     currentGame = g
                     savedIndex  = currentIndex
@@ -535,12 +560,16 @@ Item {
                     sfx.playMove()
                     list.currentIndex = index
                     savedIndex = index
+                    var g = root._resolveRealGame(index)
+                    if (g) currentGame = g
                 }
                 onDoubleClicked: {
                     list.currentIndex = index
                     sfx.playMove()
                     savedIndex = index
-                    if (currentGame) currentGame.launch()
+                    var g = root._resolveRealGame(index)
+                    if (g) currentGame = g
+                        if (currentGame) currentGame.launch()
                 }
             }
         }
