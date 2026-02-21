@@ -517,6 +517,20 @@ Item {
                 root.darkMode = !root.darkMode
                 return
             }
+
+            if (api.keys.isNextPage(event)) {
+                event.accepted = true
+                sfx.playMove()
+                gamePanel.nextFilter()
+                return
+            }
+
+            if (api.keys.isPrevPage(event)) {
+                event.accepted = true
+                sfx.playMove()
+                gamePanel.prevFilter()
+                return
+            }
         }
     }
 
