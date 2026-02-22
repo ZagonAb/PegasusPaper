@@ -11,15 +11,15 @@ Item {
 
     Fonts { id: theFonts }
 
-    property bool darkMode: false
-    property bool nightLight: false
+    property bool darkMode: api.memory.has("paperTheme.darkMode")
+    ? api.memory.get("paperTheme.darkMode") === true
+    : false
+    property bool nightLight: api.memory.has("paperTheme.nightLight")
+    ? api.memory.get("paperTheme.nightLight") === true
+    : false
 
-    Component.onCompleted: {
-        if (api.memory.has("paperTheme.darkMode"))
-            darkMode = api.memory.get("paperTheme.darkMode") === true
-        if (api.memory.has("paperTheme.nightLight"))
-            nightLight = api.memory.get("paperTheme.nightLight") === true
-    }
+    property bool ready: false
+    Component.onCompleted: ready = true
 
     onDarkModeChanged: {
         api.memory.set("paperTheme.darkMode", darkMode)
@@ -38,22 +38,22 @@ Item {
     property color inkFaint: darkMode ? "#888888" : "#7A7A7A"
     property color divColor: darkMode ? "#504C44" : "#8A8070"
 
-    Behavior on bgColor  { ColorAnimation { duration: 220 } }
-    Behavior on panelBg  { ColorAnimation { duration: 220 } }
-    Behavior on inkBlack { ColorAnimation { duration: 220 } }
-    Behavior on inkDark  { ColorAnimation { duration: 220 } }
-    Behavior on inkMid   { ColorAnimation { duration: 220 } }
-    Behavior on inkLight { ColorAnimation { duration: 220 } }
-    Behavior on inkFaint { ColorAnimation { duration: 220 } }
-    Behavior on divColor { ColorAnimation { duration: 220 } }
+    Behavior on bgColor  { enabled: root.ready; ColorAnimation { duration: 220 } }
+    Behavior on panelBg  { enabled: root.ready; ColorAnimation { duration: 220 } }
+    Behavior on inkBlack { enabled: root.ready; ColorAnimation { duration: 220 } }
+    Behavior on inkDark  { enabled: root.ready; ColorAnimation { duration: 220 } }
+    Behavior on inkMid   { enabled: root.ready; ColorAnimation { duration: 220 } }
+    Behavior on inkLight { enabled: root.ready; ColorAnimation { duration: 220 } }
+    Behavior on inkFaint { enabled: root.ready; ColorAnimation { duration: 220 } }
+    Behavior on divColor { enabled: root.ready; ColorAnimation { duration: 220 } }
 
     property string focusPanel: "collections"
     property bool galleryOpen: false
 
     function openGallery() {
         if (!gamePanel.currentGame) return
-        galleryOpen = true
-        focusPanel  = "gallery"
+            galleryOpen = true
+            focusPanel  = "gallery"
     }
     function closeGallery() {
         galleryOpen = false
@@ -88,7 +88,7 @@ Item {
         opacity: nightLight ? 0.35 : 0.0
         z: 998
         visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutQuad } }
+        Behavior on opacity { enabled: root.ready; NumberAnimation { duration: 400; easing.type: Easing.InOutQuad } }
     }
 
     Rectangle {
@@ -98,7 +98,7 @@ Item {
         opacity: nightLight ? 0.55 : 0.0
         z: 999
         visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutQuad } }
+        Behavior on opacity { enabled: root.ready; NumberAnimation { duration: 400; easing.type: Easing.InOutQuad } }
     }
 
     Item {
@@ -193,8 +193,8 @@ Item {
                     id: nightLightIcon
                     anchors.fill: parent
                     source: nightLight
-                           ? "assets/icons/on.svg"
-                           : "assets/icons/off.svg"
+                    ? "assets/icons/on.svg"
+                    : "assets/icons/off.svg"
                     fillMode: Image.PreserveAspectFit
                     mipmap: true
                     smooth: true
