@@ -12,6 +12,8 @@ Item {
 
     signal closed()
 
+    SoundManager { id: sfx }
+
     function isVideoUrl(u) {
         if (!u) return false
         var s = u.toString().toLowerCase()
@@ -118,7 +120,10 @@ Item {
                 MouseArea {
                     id: closeHover; anchors.fill: parent
                     hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                    onClicked: closeGallery()
+                    onClicked: {
+                        sfx.playMove()
+                        closeGallery()
+                    }
                 }
             }
 
@@ -167,7 +172,7 @@ Item {
                     if      (mouse.x - startX < -vpx(30)) goNext()
                     else if (mouse.x - startX >  vpx(30)) goPrev()
                 }
-                onDoubleClicked: { if (mediaUrls.length > 0 && !root.currentIsVideo) openZoom() }
+                onDoubleClicked: { if (mediaUrls.length > 0 && !root.currentIsVideo) { sfx.playMove(); openZoom() } }
                 cursorShape: Qt.OpenHandCursor
             }
 
@@ -182,7 +187,7 @@ Item {
                     color: aL.containsMouse ? bgColor : inkFaint
                     Behavior on color { ColorAnimation { duration: 100 } }
                 }
-                MouseArea { id: aL; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: goPrev() }
+                MouseArea { id: aL; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { sfx.playMove(); goPrev() } }
             }
 
             Rectangle {
@@ -196,7 +201,7 @@ Item {
                     color: aR.containsMouse ? bgColor : inkFaint
                     Behavior on color { ColorAnimation { duration: 100 } }
                 }
-                MouseArea { id: aR; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: goNext() }
+                MouseArea { id: aR; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: { sfx.playMove(); goNext() } }
             }
         }
 
@@ -253,7 +258,10 @@ Item {
 
                     MouseArea {
                         anchors.fill: parent; cursorShape: Qt.PointingHandCursor
-                        onClicked: root.currentIdx = index
+                        onClicked: {
+                            sfx.playMove()
+                            root.currentIdx = index
+                        }
                     }
                 }
             }
@@ -268,7 +276,7 @@ Item {
         visible: opacity > 0
         Behavior on opacity { NumberAnimation { duration: 200 } }
 
-        MouseArea { anchors.fill: parent; onClicked: closeZoom() }
+        MouseArea { anchors.fill: parent; onClicked: { sfx.playMove(); closeZoom() } }
 
         GrayscaleImage {
             anchors.fill: parent; anchors.margins: vpx(32)
@@ -293,7 +301,7 @@ Item {
             Behavior on color { ColorAnimation { duration: 100 } }
             Text { anchors.centerIn: parent; text: "‹"; font.pixelSize: vpx(30); color: "white" }
             MouseArea { id: zL; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                onClicked: { mouse.accepted = true; goPrev() } }
+                onClicked: { mouse.accepted = true; sfx.playMove(); goPrev() } }
         }
 
         Rectangle {
@@ -305,25 +313,64 @@ Item {
             Behavior on color { ColorAnimation { duration: 100 } }
             Text { anchors.centerIn: parent; text: "›"; font.pixelSize: vpx(30); color: "white" }
             MouseArea { id: zR; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor
-                onClicked: { mouse.accepted = true; goNext() } }
+                onClicked: { mouse.accepted = true; sfx.playMove(); goNext() } }
         }
+    }
+
+    Timer {
+        id: closeTimer
+        interval: 100
+        onTriggered: root.closed()
     }
 
     focus: true
     Keys.onPressed: {
         if (zoomActive) {
-            if (api.keys.isCancel(event) || event.key === Qt.Key_Escape) { event.accepted = true; closeZoom(); return }
-            if (event.key === Qt.Key_Left  || api.keys.isPrevPage(event)) { event.accepted = true; goPrev(); return }
-            if (event.key === Qt.Key_Right || api.keys.isNextPage(event)) { event.accepted = true; goNext(); return }
-            event.accepted = true; return
-        }
-        if (api.keys.isCancel(event) || event.key === Qt.Key_Escape) { event.accepted = true; closeGallery(); return }
-        if (event.key === Qt.Key_Left  || api.keys.isPrevPage(event)) { event.accepted = true; goPrev(); return }
-        if (event.key === Qt.Key_Right || api.keys.isNextPage(event)) { event.accepted = true; goNext(); return }
-        if (api.keys.isAccept(event)   || event.key === Qt.Key_Return) {
+            if (api.keys.isCancel(event) || event.key === Qt.Key_Escape) {
+                event.accepted = true
+                sfx.playMove()
+                closeZoom()
+                return
+            }
+            if (event.key === Qt.Key_Left || api.keys.isPrevPage(event)) {
+                event.accepted = true
+                sfx.playMove()
+                goPrev()
+                return
+            }
+            if (event.key === Qt.Key_Right || api.keys.isNextPage(event)) {
+                event.accepted = true
+                sfx.playMove()
+                goNext()
+                return
+            }
             event.accepted = true
-            if (mediaUrls.length > 0 && !root.currentIsVideo) openZoom()
             return
+        }
+
+        if (api.keys.isCancel(event) || event.key === Qt.Key_Escape) {
+            event.accepted = true
+            sfx.playMove()
+            closeTimer.start()
+            return
+        }
+        if (event.key === Qt.Key_Left || api.keys.isPrevPage(event)) {
+            event.accepted = true
+            sfx.playMove()
+            goPrev()
+            return
+        }
+        if (event.key === Qt.Key_Right || api.keys.isNextPage(event)) {
+            event.accepted = true
+            sfx.playMove()
+            goNext()
+            return
+        }
+        if (api.keys.isAccept(event) || event.key === Qt.Key_Return) {
+            event.accepted = true
+            sfx.playMove()
+            if (mediaUrls.length > 0 && !root.currentIsVideo) openZoom()
+                return
         }
         event.accepted = true
     }

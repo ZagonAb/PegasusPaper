@@ -240,6 +240,7 @@ Item {
                                     hoverEnabled: true
                                     cursorShape: Qt.PointingHandCursor
                                     onClicked: {
+                                        sfx.playMove()
                                         if (game) root.requestGallery()
                                     }
                                 }
