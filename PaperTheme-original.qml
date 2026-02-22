@@ -85,20 +85,10 @@ Item {
         id: nightLightOverlay
         anchors.fill: parent
         color: "#623405"
-        opacity: nightLight ? 0.30 : 0.0
-        z: 998
-        visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutQuad } }
-    }
-
-    Rectangle {
-        id: nightLightDim
-        anchors.fill: parent
-        color: "#000000"
-        opacity: nightLight ? 0.60 : 0.0
+        opacity: nightLight ? 0.50 : 0.0
         z: 999
         visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutQuad } }
+        Behavior on opacity { NumberAnimation { duration: 350; easing.type: Easing.InOutQuad } }
     }
 
     Item {
