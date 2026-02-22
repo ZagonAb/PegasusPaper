@@ -2,9 +2,11 @@
 
 - A theme for Pegasus Frontend, inspired by e-ink displays and minimalist paper aesthetics.
 
-![screen](https://github.com/ZagonAb/PegasusPaper/blob/e5c0146c8cd645783aa7e320b0714a490be67d68/.meta/screenshots/screen0.png)
+![screen](https://github.com/ZagonAb/PegasusPaper/blob/06fd639d2bb19b88500c9ad70ed661796c60dcdf/.meta/screenshots/screen0.png)
 
-![screen1](https://github.com/ZagonAb/PegasusPaper/blob/e5c0146c8cd645783aa7e320b0714a490be67d68/.meta/screenshots/screen1.png)
+![screen1](https://github.com/ZagonAb/PegasusPaper/blob/06fd639d2bb19b88500c9ad70ed661796c60dcdf/.meta/screenshots/screen1.png)
+
+![screen2](https://github.com/ZagonAb/PegasusPaper/blob/06fd639d2bb19b88500c9ad70ed661796c60dcdf/.meta/screenshots/screen2.png)
 
 
 # RetroArch Monochrome Icons
