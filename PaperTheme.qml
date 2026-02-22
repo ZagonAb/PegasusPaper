@@ -11,15 +11,17 @@ Item {
 
     Fonts { id: theFonts }
 
-    property bool darkMode: api.memory.has("paperTheme.darkMode")
-    ? api.memory.get("paperTheme.darkMode") === true
-    : false
-    property bool nightLight: api.memory.has("paperTheme.nightLight")
-    ? api.memory.get("paperTheme.nightLight") === true
-    : false
-
+    property bool darkMode: false
+    property bool nightLight: false
     property bool ready: false
-    Component.onCompleted: ready = true
+
+    Component.onCompleted: {
+        if (api.memory.has("paperTheme.darkMode"))
+            darkMode = api.memory.get("paperTheme.darkMode") === true
+            if (api.memory.has("paperTheme.nightLight"))
+                nightLight = api.memory.get("paperTheme.nightLight") === true
+                ready = true
+    }
 
     onDarkModeChanged: {
         api.memory.set("paperTheme.darkMode", darkMode)
