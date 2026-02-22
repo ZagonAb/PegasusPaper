@@ -436,7 +436,7 @@ Item {
         }
     }
 
-    Keys.onPressed: {
+    /*Keys.onPressed: {
 
         if (focusPanel === "gallery") {
             if (api.keys.isCancel(event) || event.key === Qt.Key_Escape) {
@@ -515,6 +515,156 @@ Item {
         }
 
         else if (focusPanel === "games") {
+
+            if (event.key === Qt.Key_Up) {
+                event.accepted = true
+                sfx.playMove()
+                gamePanel.moveUp()
+                return
+            }
+
+            if (event.key === Qt.Key_Down) {
+                event.accepted = true
+                sfx.playMove()
+                gamePanel.moveDown()
+                return
+            }
+
+            if (event.key === Qt.Key_Left || api.keys.isCancel(event)) {
+                event.accepted = true
+                sfx.playMove()
+                focusPanel = "collections"
+                return
+            }
+
+            if (api.keys.isAccept(event)) {
+                event.accepted = true
+                sfx.playMove()
+                gamePanel.launchCurrent()
+                return
+            }
+
+            if (api.keys.isDetails(event)) {
+                event.accepted = true
+                sfx.playFavorite()
+                gamePanel.toggleFavorite()
+                return
+            }
+
+            if (api.keys.isFilters(event)) {
+                event.accepted = true
+                sfx.playMove()
+                root.darkMode = !root.darkMode
+                return
+            }
+
+            if (api.keys.isNextPage(event)) {
+                event.accepted = true
+                sfx.playMove()
+                gamePanel.nextFilter()
+                return
+            }
+
+            if (api.keys.isPrevPage(event)) {
+                event.accepted = true
+                sfx.playMove()
+                gamePanel.prevFilter()
+                return
+            }
+        }
+    }*/
+
+    Keys.onPressed: {
+
+        if (focusPanel === "gallery") {
+            if (api.keys.isCancel(event) || event.key === Qt.Key_Escape) {
+                event.accepted = true
+                root.closeGallery()
+                return
+            }
+            event.accepted = true
+            return
+        }
+
+        if (showExitMenu) {
+            if (event.key === Qt.Key_Left) {
+                event.accepted = true
+                sfx.playMove()
+                exitMenuIndex = (exitMenuIndex - 1 + 2) % 2
+                return
+            }
+            if (event.key === Qt.Key_Right) {
+                event.accepted = true
+                sfx.playMove()
+                exitMenuIndex = (exitMenuIndex + 1) % 2
+                return
+            }
+            if (api.keys.isAccept(event)) {
+                activateExitOption(exitMenuIndex, event)
+                return
+            }
+            if (api.keys.isCancel(event)) {
+                closeExitMenu()
+                event.accepted = false
+                return
+            }
+            event.accepted = true
+            return
+        }
+
+        if (focusPanel === "collections") {
+
+            if (event.key === Qt.Key_G) {
+                event.accepted = true
+                sfx.playMove()
+                root.openGallery()
+                return
+            }
+
+            if (event.key === Qt.Key_Up) {
+                event.accepted = true
+                sfx.playMove()
+                collectionPanel.moveUp()
+                return
+            }
+
+            if (event.key === Qt.Key_Down) {
+                event.accepted = true
+                sfx.playMove()
+                collectionPanel.moveDown()
+                return
+            }
+
+            if (event.key === Qt.Key_Right || api.keys.isAccept(event)) {
+                event.accepted = true
+                sfx.playMove()
+                focusPanel = "games"
+                return
+            }
+
+            if (api.keys.isCancel(event)) {
+                event.accepted = true
+                sfx.playCancel()
+                openExitMenu()
+                return
+            }
+
+            if (api.keys.isFilters(event)) {
+                event.accepted = true
+                sfx.playMove()
+                root.darkMode = !root.darkMode
+                return
+            }
+        }
+
+        else if (focusPanel === "games") {
+
+            if (event.key === Qt.Key_G) {
+                event.accepted = true
+                sfx.playMove()
+                root.openGallery()
+                return
+            }
 
             if (event.key === Qt.Key_Up) {
                 event.accepted = true
