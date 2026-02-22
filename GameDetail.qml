@@ -300,6 +300,7 @@ Item {
                                 font.pixelSize: vpx(12)
                                 font.letterSpacing: vpx(2)
                                 color: inkMid
+                                anchors.verticalCenter: parent.verticalCenter
                                 text: game && game.playTime > 0 ? formatTime(game.playTime) : ""
                                 visible: text !== ""
 
