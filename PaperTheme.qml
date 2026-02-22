@@ -12,14 +12,21 @@ Item {
     Fonts { id: theFonts }
 
     property bool darkMode: false
+    property bool nightLight: false
 
     Component.onCompleted: {
         if (api.memory.has("paperTheme.darkMode"))
             darkMode = api.memory.get("paperTheme.darkMode") === true
+        if (api.memory.has("paperTheme.nightLight"))
+            nightLight = api.memory.get("paperTheme.nightLight") === true
     }
 
     onDarkModeChanged: {
         api.memory.set("paperTheme.darkMode", darkMode)
+    }
+
+    onNightLightChanged: {
+        api.memory.set("paperTheme.nightLight", nightLight)
     }
 
     property color bgColor:  darkMode ? "#1A1A1A" : "#EDE9DF"
@@ -74,8 +81,17 @@ Item {
     "
     }
 
+    Rectangle {
+        id: nightLightOverlay
+        anchors.fill: parent
+        color: "#623405"
+        opacity: nightLight ? 0.50 : 0.0
+        z: 999
+        visible: opacity > 0
+        Behavior on opacity { NumberAnimation { duration: 350; easing.type: Easing.InOutQuad } }
+    }
+
     Item {
-        id: contentWrapper
         anchors.fill: parent
         transformOrigin: Item.Center
 
@@ -155,8 +171,48 @@ Item {
                 color: inkFaint
             }
 
+            Item {
+                id: nightLightToggle
+                anchors.left: themeToggle.right
+                anchors.leftMargin: vpx(4)
+                anchors.verticalCenter: parent.verticalCenter
+                width: vpx(36)
+                height: vpx(36)
+
+                Image {
+                    id: nightLightIcon
+                    anchors.fill: parent
+                    source: nightLight
+                           ? "assets/icons/on.svg"
+                           : "assets/icons/off.svg"
+                    fillMode: Image.PreserveAspectFit
+                    mipmap: true
+                    smooth: true
+                    visible: false
+                }
+
+                ColorOverlay {
+                    anchors.fill: nightLightIcon
+                    source: nightLightIcon
+                    color: nightLight ? "#F5C97A" : bgColor
+                    opacity: nightLightMouse.containsMouse ? 1.0 : (nightLight ? 0.9 : 0.6)
+                    Behavior on color   { ColorAnimation { duration: 200 } }
+                    Behavior on opacity { NumberAnimation { duration: 150 } }
+                }
+
+                MouseArea {
+                    id: nightLightMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: {
+                        sfx.playMove()
+                        root.nightLight = !root.nightLight
+                    }
+                }
+            }
+
             Text {
-                id: clockText
                 anchors.right: parent.right
                 anchors.rightMargin: vpx(32)
                 anchors.verticalCenter: parent.verticalCenter
@@ -437,6 +493,13 @@ Item {
     }
 
     Keys.onPressed: {
+
+        if (event.key === Qt.Key_N) {
+            event.accepted = true
+            sfx.playMove()
+            root.nightLight = !root.nightLight
+            return
+        }
 
         if (focusPanel === "gallery") {
             if (api.keys.isCancel(event) || event.key === Qt.Key_Escape) {
