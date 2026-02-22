@@ -41,6 +41,17 @@ Item {
     Behavior on divColor { ColorAnimation { duration: 220 } }
 
     property string focusPanel: "collections"
+    property bool galleryOpen: false
+
+    function openGallery() {
+        if (!gamePanel.currentGame) return
+        galleryOpen = true
+        focusPanel  = "gallery"
+    }
+    function closeGallery() {
+        galleryOpen = false
+        focusPanel  = "games"
+    }
 
     property bool   showExitMenu:   false
     property int    exitMenuIndex:  0
@@ -233,6 +244,24 @@ Item {
             inkLight: root.inkLight
             inkFaint: root.inkFaint
             divColor: root.divColor
+
+            onRequestGallery: root.openGallery()
+        }
+    }
+
+    Loader {
+        id: galleryLoader
+        anchors.fill: parent
+        active: root.galleryOpen
+        source: root.galleryOpen ? "MediaGallery.qml" : ""
+
+        onLoaded: {
+            item.game     = Qt.binding(function() { return gamePanel.currentGame })
+            item.bgColor  = Qt.binding(function() { return root.bgColor  })
+            item.inkBlack = Qt.binding(function() { return root.inkBlack })
+            item.inkFaint = Qt.binding(function() { return root.inkFaint })
+            item.divColor = Qt.binding(function() { return root.divColor })
+            item.closed.connect(root.closeGallery)
         }
     }
 
@@ -408,6 +437,17 @@ Item {
     }
 
     Keys.onPressed: {
+
+        if (focusPanel === "gallery") {
+            if (api.keys.isCancel(event) || event.key === Qt.Key_Escape) {
+                event.accepted = true
+                root.closeGallery()
+                return
+            }
+
+            event.accepted = true
+            return
+        }
 
         if (showExitMenu) {
 

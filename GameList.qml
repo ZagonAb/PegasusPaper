@@ -127,8 +127,8 @@ Item {
 
     onHasFocusChanged: {
         if (hasFocus) {
-            savedIndex = 0
-            list.currentIndex = 0
+            var safe = Math.min(savedIndex, Math.max(0, filteredModel.count - 1))
+            list.currentIndex = safe
         } else {
             list.currentIndex = -1
         }

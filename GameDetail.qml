@@ -16,6 +16,8 @@ Item {
     property color inkFaint
     property color divColor
 
+    signal requestGallery()
+
     SoundManager { id: sfx }
 
     Fonts { id: theFonts }
@@ -202,21 +204,44 @@ Item {
                                 }
                             }
 
-                            Text {
+                            Rectangle {
+                                id: galleryBtn
                                 anchors.left: favBtn.right
-                                anchors.leftMargin: vpx(14)
+                                anchors.leftMargin: vpx(10)
                                 anchors.verticalCenter: parent.verticalCenter
-                                font.family: theFonts.publicSans
-                                font.pixelSize: vpx(12)
-                                font.letterSpacing: vpx(2)
-                                color: inkMid
-                                text: game && game.playTime > 0 ? formatTime(game.playTime) : ""
-                                visible: text !== ""
+                                width: vpx(44)
+                                height: vpx(40)
+                                color: galleryMouse.containsMouse ? inkFaint : "transparent"
+                                border.color: inkFaint
+                                border.width: 2
+                                opacity: game ? 1.0 : 0.3
+                                Behavior on color { ColorAnimation { duration: 120 } }
 
-                                function formatTime(s) {
-                                    var h = Math.floor(s / 3600)
-                                    var m = Math.floor((s % 3600) / 60)
-                                    return h > 0 ? h + "h " + m + "m played" : m + " min played"
+                                Image {
+                                    id: galleryIcon
+                                    anchors.centerIn: parent
+                                    width: vpx(20)
+                                    height: vpx(20)
+                                    source: "assets/icons/gallery.svg"
+                                    sourceSize: Qt.size(vpx(20), vpx(20))
+                                    visible: false
+                                }
+
+                                ColorOverlay {
+                                    anchors.fill: galleryIcon
+                                    source: galleryIcon
+                                    color: galleryMouse.containsMouse ? bgColor : inkFaint
+                                    Behavior on color { ColorAnimation { duration: 120 } }
+                                }
+
+                                MouseArea {
+                                    id: galleryMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        if (game) root.requestGallery()
+                                    }
                                 }
                             }
                         }
@@ -256,13 +281,31 @@ Item {
                             }
 
                             Text {
-                                text: "  •  ♥ FAVORITE"
+                                text: "  •  ♥ FAVORITE  • "
                                 font.family: theFonts.publicSans
                                 font.pixelSize: vpx(12)
                                 font.letterSpacing: vpx(3)
                                 color: inkMid
                                 anchors.verticalCenter: parent.verticalCenter
                                 visible: game && game.favorite
+                            }
+
+                            Text {
+                                anchors.left: favBtn.right
+                                anchors.leftMargin: vpx(14)
+                                anchors.verticalCenter: parent.verticalCenter
+                                font.family: theFonts.publicSans
+                                font.pixelSize: vpx(12)
+                                font.letterSpacing: vpx(2)
+                                color: inkMid
+                                text: game && game.playTime > 0 ? formatTime(game.playTime) : ""
+                                visible: text !== ""
+
+                                function formatTime(s) {
+                                    var h = Math.floor(s / 3600)
+                                    var m = Math.floor((s % 3600) / 60)
+                                    return h > 0 ? h + "h " + m + "m played" : m + " min played"
+                                }
                             }
                         }
                     }
