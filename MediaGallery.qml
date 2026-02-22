@@ -12,6 +12,15 @@ Item {
 
     signal closed()
 
+    function isVideoUrl(u) {
+        if (!u) return false
+        var s = u.toString().toLowerCase()
+        return s.endsWith(".mp4")  || s.endsWith(".mkv")  ||
+               s.endsWith(".avi")  || s.endsWith(".webm") ||
+               s.endsWith(".mov")  || s.endsWith(".flv")  ||
+               s.endsWith(".m4v")
+    }
+
     function buildMediaList(g) {
         if (!g) return []
         var a    = g.assets
@@ -24,6 +33,7 @@ Item {
             if (!lst) return
             for (var i = 0; i < lst.length; i++) add(lst[i])
         }
+
         add(a.screenshot);  add(a.titlescreen); add(a.background)
         add(a.banner);      add(a.poster);      add(a.boxFront)
         add(a.boxBack);     add(a.boxFull);     add(a.cartridge)
@@ -32,6 +42,8 @@ Item {
         add(a.cabinetLeft); add(a.cabinetRight)
         addList(a.screenshotList); addList(a.titlescreenList)
         addList(a.backgroundList); addList(a.bannerList); addList(a.posterList)
+        add(a.video)
+        addList(a.videoList)
         return urls
     }
 
@@ -39,9 +51,12 @@ Item {
     property int  currentIdx: 0
     property bool zoomActive: false
 
+    readonly property bool currentIsVideo:
+        mediaUrls.length > 0 && isVideoUrl(mediaUrls[currentIdx])
+
     function goPrev()       { if (mediaUrls.length > 0) currentIdx = (currentIdx - 1 + mediaUrls.length) % mediaUrls.length }
     function goNext()       { if (mediaUrls.length > 0) currentIdx = (currentIdx + 1) % mediaUrls.length }
-    function openZoom()     { zoomActive = true  }
+    function openZoom()     { if (!currentIsVideo) zoomActive = true  }
     function closeZoom()    { zoomActive = false }
     function closeGallery() { root.closed() }
 
@@ -70,9 +85,22 @@ Item {
 
             Text {
                 anchors.centerIn: parent
-                text: mediaUrls.length > 0 ? (currentIdx + 1) + " / " + mediaUrls.length : "Sin imágenes"
+                text: mediaUrls.length > 0 ? (currentIdx + 1) + " / " + mediaUrls.length : "Sin medios"
                 font.pixelSize: vpx(12); font.letterSpacing: vpx(3)
                 color: inkFaint
+            }
+
+            Rectangle {
+                anchors.left: parent.left; anchors.leftMargin: vpx(10)
+                anchors.verticalCenter: parent.verticalCenter
+                visible: root.currentIsVideo
+                width: vpx(72); height: vpx(25); radius: vpx(3)
+                color: Qt.rgba(0, 0, 0, 0.18)
+                Text {
+                    anchors.centerIn: parent
+                    text: "▶ VIDEO"; font.pixelSize: vpx(9); font.letterSpacing: vpx(2)
+                    color: inkFaint
+                }
             }
 
             Rectangle {
@@ -105,7 +133,7 @@ Item {
             Text {
                 anchors.centerIn: parent
                 visible: mediaUrls.length === 0
-                text: "This game has no images."
+                text: "This game has no media."
                 font.pixelSize: vpx(14); font.letterSpacing: vpx(2); color: inkFaint
             }
 
@@ -139,7 +167,7 @@ Item {
                     if      (mouse.x - startX < -vpx(30)) goNext()
                     else if (mouse.x - startX >  vpx(30)) goPrev()
                 }
-                onDoubleClicked: { if (mediaUrls.length > 0) openZoom() }
+                onDoubleClicked: { if (mediaUrls.length > 0 && !root.currentIsVideo) openZoom() }
                 cursorShape: Qt.OpenHandCursor
             }
 
@@ -190,20 +218,37 @@ Item {
 
                 delegate: Rectangle {
                     width: vpx(80); height: vpx(54); radius: vpx(3)
-                    color: "transparent"
-                    clip: true
+                    color: "transparent"; clip: true
                     border.color: index === root.currentIdx ? inkBlack : "transparent"
                     border.width: 2
 
                     GrayscaleImage {
-                        anchors.fill: parent
-                        anchors.margins: vpx(2)
-                        source:   mediaUrls[index]
+                        anchors.fill: parent; anchors.margins: vpx(2)
+                        source:   !root.isVideoUrl(mediaUrls[index]) ? mediaUrls[index] : ""
                         fillMode: Image.PreserveAspectFit
                         opacity:  index === root.currentIdx ? 1.0 : 0.45
                         Behavior on opacity { NumberAnimation { duration: 120 } }
                         z: -1
+                    }
 
+                    Rectangle {
+                        anchors.fill: parent; anchors.margins: vpx(2)
+                        visible: root.isVideoUrl(mediaUrls[index])
+                        color:   index === root.currentIdx
+                                     ? Qt.rgba(0, 0, 0, 0.55)
+                                     : Qt.rgba(0, 0, 0, 0.28)
+                        radius: vpx(2)
+                        Behavior on color { ColorAnimation { duration: 120 } }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "▶"
+                            font.pixelSize: vpx(18)
+                            color: index === root.currentIdx
+                                       ? Qt.rgba(1, 1, 1, 0.90)
+                                       : Qt.rgba(1, 1, 1, 0.40)
+                            Behavior on color { ColorAnimation { duration: 120 } }
+                        }
                     }
 
                     MouseArea {
@@ -275,7 +320,11 @@ Item {
         if (api.keys.isCancel(event) || event.key === Qt.Key_Escape) { event.accepted = true; closeGallery(); return }
         if (event.key === Qt.Key_Left  || api.keys.isPrevPage(event)) { event.accepted = true; goPrev(); return }
         if (event.key === Qt.Key_Right || api.keys.isNextPage(event)) { event.accepted = true; goNext(); return }
-        if (api.keys.isAccept(event)   || event.key === Qt.Key_Return)  { event.accepted = true; if (mediaUrls.length > 0) openZoom(); return }
+        if (api.keys.isAccept(event)   || event.key === Qt.Key_Return) {
+            event.accepted = true
+            if (mediaUrls.length > 0 && !root.currentIsVideo) openZoom()
+            return
+        }
         event.accepted = true
     }
 }
