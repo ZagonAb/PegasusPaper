@@ -211,8 +211,8 @@ Item {
                                 anchors.verticalCenter: parent.verticalCenter
                                 width: vpx(44)
                                 height: vpx(40)
-                                color: galleryMouse.containsMouse ? inkFaint : "transparent"
-                                border.color: inkFaint
+                                color: galleryMouse.containsMouse ? inkBlack : "transparent"
+                                border.color: inkBlack
                                 border.width: 2
                                 opacity: game ? 1.0 : 0.3
                                 Behavior on color { ColorAnimation { duration: 120 } }
@@ -230,7 +230,7 @@ Item {
                                 ColorOverlay {
                                     anchors.fill: galleryIcon
                                     source: galleryIcon
-                                    color: galleryMouse.containsMouse ? bgColor : inkFaint
+                                    color: galleryMouse.containsMouse ? bgColor : inkBlack
                                     Behavior on color { ColorAnimation { duration: 120 } }
                                 }
 
