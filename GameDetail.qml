@@ -290,10 +290,12 @@ Item {
                                 visible: game && game.favorite
                             }
 
+                            Item {
+                                width: vpx(1)
+                                height: 1
+                            }
+
                             Text {
-                                anchors.left: favBtn.right
-                                anchors.leftMargin: vpx(14)
-                                anchors.verticalCenter: parent.verticalCenter
                                 font.family: theFonts.publicSans
                                 font.pixelSize: vpx(12)
                                 font.letterSpacing: vpx(2)
