@@ -85,7 +85,7 @@ Item {
         id: nightLightOverlay
         anchors.fill: parent
         color: "#623405"
-        opacity: nightLight ? 0.30 : 0.0
+        opacity: nightLight ? 0.35 : 0.0
         z: 998
         visible: opacity > 0
         Behavior on opacity { NumberAnimation { duration: 400; easing.type: Easing.InOutQuad } }

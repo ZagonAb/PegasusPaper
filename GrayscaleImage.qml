@@ -88,7 +88,7 @@ Loader {
                 id: _player
                 source: root.source
                 loops:  MediaPlayer.Infinite
-                volume: root.muted ? 0.0 : 0.5
+                volume: root.muted ? 0.0 : 0.7
             }
 
             VideoOutput {
