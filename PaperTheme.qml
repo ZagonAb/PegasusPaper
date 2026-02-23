@@ -624,7 +624,7 @@ Item {
                 return
             }
 
-            if (api.keys.isAccept(event)) {
+            if (!event.isAutoRepeat && api.keys.isAccept(event)) {
                 event.accepted = true
                 sfx.playMove()
                 gamePanel.launchCurrent()
