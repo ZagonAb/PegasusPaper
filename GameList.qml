@@ -612,7 +612,9 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: "♥"
                 font.pixelSize: vpx(12)
-                color: isSelected ? inkMid : inkFaint
+                color: isSelected && root.selectedGameGrayscaleDisabled
+                ? "#E53935"
+                : (isSelected ? inkMid : inkFaint)
                 visible: modelData.favorite
             }
 
