@@ -62,17 +62,51 @@ Item {
         visible: !root.grayscaleEnabled
         source: !root.isVideo ? root.source : ""
         fillMode: root.fillMode
+        verticalAlignment: root.verticalAlignment
         asynchronous: true
     }
 
     ShaderEffect {
+        id: shaderEffect
         visible: !root.isVideo && root.grayscaleEnabled
-        x: (parent.width - img.paintedWidth) / 2
-        y: root.calcY()
-        width: img.paintedWidth
-        height: img.paintedHeight
         property variant source: img
         fragmentShader: root._grayFrag
+
+        x: {
+            if (root.fillMode === Image.PreserveAspectFit) {
+                return (parent.width - img.paintedWidth) / 2
+            } else if (root.fillMode === Image.PreserveAspectCrop) {
+                return 0
+            }
+            return 0
+        }
+
+        y: {
+            if (root.fillMode === Image.PreserveAspectFit) {
+                return root.calcY()
+            } else if (root.fillMode === Image.PreserveAspectCrop) {
+                return 0
+            }
+            return 0
+        }
+
+        width: {
+            if (root.fillMode === Image.PreserveAspectFit) {
+                return img.paintedWidth
+            } else if (root.fillMode === Image.PreserveAspectCrop) {
+                return parent.width
+            }
+            return parent.width
+        }
+
+        height: {
+            if (root.fillMode === Image.PreserveAspectFit) {
+                return img.paintedHeight
+            } else if (root.fillMode === Image.PreserveAspectCrop) {
+                return parent.height
+            }
+            return parent.height
+        }
     }
 
     Loader {
@@ -97,7 +131,14 @@ Item {
                     id: _videoOut
                     anchors.fill: parent
                     source: _player
-                    fillMode: VideoOutput.PreserveAspectFit
+                    fillMode: {
+                        switch(root.fillMode) {
+                            case Image.PreserveAspectFit: return VideoOutput.PreserveAspectFit
+                            case Image.PreserveAspectCrop: return VideoOutput.PreserveAspectCrop
+                            case Image.Stretch: return VideoOutput.Stretch
+                            default: return VideoOutput.PreserveAspectFit
+                        }
+                    }
                     visible: !root.grayscaleEnabled
                 }
 
@@ -110,6 +151,7 @@ Item {
                 }
 
                 ShaderEffect {
+                    id: videoShaderEffect
                     visible: root.grayscaleEnabled
                     anchors.fill: _videoOut
                     property variant source: _videoSrc
@@ -158,17 +200,31 @@ Item {
     }
 
     Rectangle {
+        id: borderRect
         visible: root.showBorder && root.paintedWidth > 0
-        x: root.isVideo && videoLoader.item
-        ? videoLoader.item.videoOut.contentRect.x
-        : (parent.width - img.paintedWidth) / 2
-        y: root.isVideo && videoLoader.item
-        ? videoLoader.item.videoOut.contentRect.y
-        : root.calcY()
-        width: root.paintedWidth
-        height: root.paintedHeight
         color: "transparent"
         border.color: root.borderColor
         border.width: 3
+
+        x: {
+            if (root.isVideo && videoLoader.item) {
+                return videoLoader.item.videoOut.contentRect.x
+            } else if (root.fillMode === Image.PreserveAspectFit) {
+                return (parent.width - img.paintedWidth) / 2
+            }
+            return 0
+        }
+
+        y: {
+            if (root.isVideo && videoLoader.item) {
+                return videoLoader.item.videoOut.contentRect.y
+            } else if (root.fillMode === Image.PreserveAspectFit) {
+                return root.calcY()
+            }
+            return 0
+        }
+
+        width: root.paintedWidth
+        height: root.paintedHeight
     }
 }
