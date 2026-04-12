@@ -16,11 +16,23 @@ Item {
     property color inkFaint
     property color divColor
 
+    property bool grayscaleActive: true
+
     signal requestGallery()
 
     SoundManager { id: sfx }
 
     Fonts { id: theFonts }
+
+    Component.onCompleted: {
+        if (api.memory.has("paperTheme.detailGrayscale")) {
+            root.grayscaleActive = api.memory.get("paperTheme.detailGrayscale") === true
+        }
+    }
+
+    onGrayscaleActiveChanged: {
+        api.memory.set("paperTheme.detailGrayscale", root.grayscaleActive)
+    }
 
     Rectangle { anchors.fill: parent; color: bgColor }
 
@@ -59,7 +71,8 @@ Item {
 
             Column {
                 id: contentCol
-                x: 0; y: 0
+                x: 0
+                y: 0
                 width: parent.width
                 spacing: 0
 
@@ -77,6 +90,7 @@ Item {
                         || "") : ""
                         fillMode: Image.PreserveAspectCrop
                         opacity: 0.45
+                        grayscaleEnabled: root.grayscaleActive
                     }
 
                     Rectangle {
@@ -107,6 +121,7 @@ Item {
                             fillMode: Image.PreserveAspectFit
                             verticalAlignment: Image.AlignBottom
                             showBorder: true
+                            grayscaleEnabled: root.grayscaleActive
                         }
                     }
 
@@ -245,6 +260,50 @@ Item {
                                     }
                                 }
                             }
+
+                            Rectangle {
+                                id: grayscaleBtn
+                                anchors.left: galleryBtn.right
+                                anchors.leftMargin: vpx(10)
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: vpx(44)
+                                height: vpx(40)
+                                color: grayscaleMouse.containsMouse ? inkBlack : "transparent"
+                                border.color: inkBlack
+                                border.width: 2
+                                opacity: game ? 1.0 : 0.3
+                                Behavior on color { ColorAnimation { duration: 120 } }
+
+                                Image {
+                                    id: grayscaleIcon
+                                    anchors.centerIn: parent
+                                    width: vpx(20)
+                                    height: vpx(20)
+                                    source: root.grayscaleActive
+                                    ? "assets/icons/color-off.svg"
+                                    : "assets/icons/color-on.svg"
+                                    sourceSize: Qt.size(vpx(20), vpx(20))
+                                    visible: false
+                                }
+
+                                ColorOverlay {
+                                    anchors.fill: grayscaleIcon
+                                    source: grayscaleIcon
+                                    color: grayscaleMouse.containsMouse ? bgColor : inkBlack
+                                    Behavior on color { ColorAnimation { duration: 120 } }
+                                }
+
+                                MouseArea {
+                                    id: grayscaleMouse
+                                    anchors.fill: parent
+                                    hoverEnabled: true
+                                    cursorShape: Qt.PointingHandCursor
+                                    onClicked: {
+                                        sfx.playMove()
+                                        root.grayscaleActive = !root.grayscaleActive
+                                    }
+                                }
+                            }
                         }
 
                         Text {
@@ -326,15 +385,15 @@ Item {
 
                     Repeater {
                         model: [
-                            { label: "DEVELOPER",  value: game ? game.developer  : "" },
-                            { label: "PUBLISHER",  value: game ? game.publisher  : "" },
-                            { label: "GENRE",      value: game ? Util.getFirstGenre(game)      : "" },
-                            { label: "PLAYERS",    value: game && game.players > 1
+                            { label: "DEVELOPER", value: game ? game.developer : "" },
+                            { label: "PUBLISHER", value: game ? game.publisher : "" },
+                            { label: "GENRE", value: game ? Util.getFirstGenre(game) : "" },
+                            { label: "PLAYERS", value: game && game.players > 1
                                 ? "1 – " + game.players
                                 : (game ? "1" : "") },
-                                { label: "RELEASED",   value: game && game.releaseYear > 0
+                                { label: "RELEASED", value: game && game.releaseYear > 0
                                     ? game.releaseYear : "" },
-                                    { label: "PLAY COUNT", value: game ? game.playCount  : "" },
+                                    { label: "PLAY COUNT", value: game ? game.playCount : "" },
                         ]
 
                         delegate: Item {

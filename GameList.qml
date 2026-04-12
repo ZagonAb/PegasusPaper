@@ -1,13 +1,13 @@
 import QtQuick 2.15
+import QtGraphicalEffects 1.15
 import SortFilterProxyModel 0.2
 import "util.js" as Util
-
 
 Item {
     id: root
 
     property var collectionModel: null
-    property var currentGame:     null
+    property var currentGame: null
 
     property color bgColor
     property color inkBlack
@@ -16,12 +16,13 @@ Item {
     property color inkLight
     property color inkFaint
     property color divColor
-    property bool  hasFocus: false
+    property bool hasFocus: false
 
     property int activeFilter: 0
+    property bool selectedGameGrayscaleDisabled: false
 
-    readonly property int countAll:        collectionModel ? collectionModel.games.count : 0
-    readonly property int countFavorites:  _countFavs()
+    readonly property int countAll: collectionModel ? collectionModel.games.count : 0
+    readonly property int countFavorites: _countFavs()
     readonly property int countLastPlayed: _countLastPlayed()
 
     function _countFavs() {
@@ -46,21 +47,21 @@ Item {
 
     function nextFilter() {
         var order = _availableFilters()
-        var cur   = order.indexOf(activeFilter)
+        var cur = order.indexOf(activeFilter)
         activeFilter = order[(cur + 1) % order.length]
         _resetListIndex()
     }
 
     function prevFilter() {
         var order = _availableFilters()
-        var cur   = order.indexOf(activeFilter)
+        var cur = order.indexOf(activeFilter)
         activeFilter = order[(cur - 1 + order.length) % order.length]
         _resetListIndex()
     }
 
     function _availableFilters() {
         var a = [0]
-        if (countFavorites  > 0) a.push(1)
+        if (countFavorites > 0) a.push(1)
             if (countLastPlayed > 0) a.push(2)
                 return a
     }
@@ -94,17 +95,30 @@ Item {
     signal requestBack()
     signal toggleTheme()
 
+    Component.onCompleted: {
+        if (api.memory.has("paperTheme.selectedGameGrayscaleDisabled")) {
+            root.selectedGameGrayscaleDisabled = api.memory.get("paperTheme.selectedGameGrayscaleDisabled") === true
+        }
+    }
+
+    onSelectedGameGrayscaleDisabledChanged: {
+        api.memory.set("paperTheme.selectedGameGrayscaleDisabled", root.selectedGameGrayscaleDisabled)
+    }
+
     function moveUp() {
         var next = Math.max(0, list.currentIndex - 1)
         list.currentIndex = next
         savedIndex = next
     }
+
     function moveDown() {
         var next = Math.min(list.count - 1, list.currentIndex + 1)
         list.currentIndex = next
         savedIndex = next
     }
-    function launchCurrent()  { if (currentGame) currentGame.launch() }
+
+    function launchCurrent() { if (currentGame) currentGame.launch() }
+
     function toggleFavorite() {
         if (!currentGame) return
             currentGame.favorite = !currentGame.favorite
@@ -136,8 +150,8 @@ Item {
 
     onCollectionModelChanged: {
         activeFilter = 0
-        savedIndex   = 0
-        currentGame  = (collectionModel && collectionModel.games.count > 0)
+        savedIndex = 0
+        currentGame = (collectionModel && collectionModel.games.count > 0)
         ? collectionModel.games.get(0) : null
     }
 
@@ -162,7 +176,7 @@ Item {
         sorters: ExpressionSorter {
             enabled: root.activeFilter === 2
             expression: {
-                var la = modelLeft.lastPlayed  ? modelLeft.lastPlayed.getTime()  : 0
+                var la = modelLeft.lastPlayed ? modelLeft.lastPlayed.getTime() : 0
                 var lb = modelRight.lastPlayed ? modelRight.lastPlayed.getTime() : 0
                 return la > lb
             }
@@ -173,19 +187,20 @@ Item {
 
     Item {
         id: panelHeader
-        x: 0; y: 0
+        x: 0
+        y: 0
         width: parent.width
         height: vpx(52)
 
         Row {
-            anchors.left:           parent.left
-            anchors.leftMargin:     vpx(12)
+            anchors.left: parent.left
+            anchors.leftMargin: vpx(12)
             anchors.verticalCenter: parent.verticalCenter
             spacing: vpx(4)
 
             Item {
                 id: tabAll
-                width:  labelAll.width + countAll_txt.width + vpx(18)
+                width: labelAll.width + countAll_txt.width + vpx(18)
                 height: vpx(28)
 
                 readonly property bool active: root.activeFilter === 0
@@ -193,7 +208,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: vpx(4)
-                    color:   tabAll.active ? root.inkBlack   : "transparent"
+                    color: tabAll.active ? root.inkBlack : "transparent"
                     border.color: tabAll.active ? "transparent" : root.divColor
                     border.width: 1
                     Behavior on color { ColorAnimation { duration: 130 } }
@@ -242,7 +257,7 @@ Item {
 
             Item {
                 id: tabFav
-                width:  labelFav.width + countFav_txt.width + vpx(18)
+                width: labelFav.width + countFav_txt.width + vpx(18)
                 height: vpx(28)
                 visible: root.countFavorites > 0
 
@@ -251,7 +266,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: vpx(4)
-                    color:   tabFav.active ? root.inkBlack   : "transparent"
+                    color: tabFav.active ? root.inkBlack : "transparent"
                     border.color: tabFav.active ? "transparent" : root.divColor
                     border.width: 1
                     Behavior on color { ColorAnimation { duration: 130 } }
@@ -300,7 +315,7 @@ Item {
 
             Item {
                 id: tabLast
-                width:  labelLast.width + countLast_txt.width + vpx(18)
+                width: labelLast.width + countLast_txt.width + vpx(18)
                 height: vpx(28)
                 visible: root.countLastPlayed > 0
 
@@ -309,7 +324,7 @@ Item {
                 Rectangle {
                     anchors.fill: parent
                     radius: vpx(4)
-                    color:   tabLast.active ? root.inkBlack   : "transparent"
+                    color: tabLast.active ? root.inkBlack : "transparent"
                     border.color: tabLast.active ? "transparent" : root.divColor
                     border.width: 1
                     Behavior on color { ColorAnimation { duration: 130 } }
@@ -358,8 +373,8 @@ Item {
         }
 
         Row {
-            anchors.right:          parent.right
-            anchors.rightMargin:    vpx(12)
+            anchors.right: parent.right
+            anchors.rightMargin: vpx(12)
             anchors.verticalCenter: parent.verticalCenter
             spacing: vpx(4)
             visible: root.countFavorites > 0 || root.countLastPlayed > 0
@@ -367,10 +382,10 @@ Item {
             Behavior on opacity { NumberAnimation { duration: 180 } }
 
             Rectangle {
-                width:  lbLabel.width + vpx(14)
+                width: lbLabel.width + vpx(14)
                 height: vpx(22)
                 radius: vpx(5)
-                color:        "transparent"
+                color: "transparent"
                 border.color: root.divColor
                 border.width: 1
 
@@ -378,11 +393,11 @@ Item {
                     id: lbLabel
                     anchors.centerIn: parent
                     text: "LB"
-                    font.family:       theFonts.publicSans
-                    font.pixelSize:    vpx(9)
+                    font.family: theFonts.publicSans
+                    font.pixelSize: vpx(9)
                     font.letterSpacing: vpx(1.5)
-                    font.bold:         true
-                    color:             root.inkFaint
+                    font.bold: true
+                    color: root.inkFaint
                 }
             }
 
@@ -390,15 +405,15 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 text: "●"
                 font.pixelSize: vpx(6)
-                color:          root.inkFaint
-                opacity:        0.7
+                color: root.inkFaint
+                opacity: 0.7
             }
 
             Rectangle {
-                width:  rbLabel.width + vpx(14)
+                width: rbLabel.width + vpx(14)
                 height: vpx(22)
                 radius: vpx(5)
-                color:        "transparent"
+                color: "transparent"
                 border.color: root.divColor
                 border.width: 1
 
@@ -406,18 +421,74 @@ Item {
                     id: rbLabel
                     anchors.centerIn: parent
                     text: "RB"
-                    font.family:       theFonts.publicSans
-                    font.pixelSize:    vpx(9)
+                    font.family: theFonts.publicSans
+                    font.pixelSize: vpx(9)
                     font.letterSpacing: vpx(1.5)
-                    font.bold:         true
-                    color:             root.inkFaint
+                    font.bold: true
+                    color: root.inkFaint
+                }
+            }
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: "●"
+                font.pixelSize: vpx(6)
+                color: root.inkFaint
+                opacity: 0.7
+            }
+
+            Rectangle {
+                id: grayscaleToggleBtn
+                width: vpx(28)
+                height: vpx(22)
+                radius: vpx(5)
+                color: grayscaleToggleHover.containsMouse ? root.inkBlack : "transparent"
+                border.color: root.selectedGameGrayscaleDisabled ? root.inkBlack : root.divColor
+                border.width: 1
+                opacity: root.currentGame ? 1.0 : 0.3
+                Behavior on color { ColorAnimation { duration: 130 } }
+                Behavior on border.color { ColorAnimation { duration: 130 } }
+
+                Image {
+                    id: grayscaleToggleIcon
+                    anchors.centerIn: parent
+                    width: vpx(14)
+                    height: vpx(14)
+                    source: root.selectedGameGrayscaleDisabled
+                    ? "assets/icons/color-on.svg"
+                    : "assets/icons/color-off.svg"
+                    fillMode: Image.PreserveAspectFit
+                    mipmap: true
+                    smooth: true
+                    visible: false
+                }
+
+                ColorOverlay {
+                    anchors.fill: grayscaleToggleIcon
+                    source: grayscaleToggleIcon
+                    color: grayscaleToggleHover.containsMouse ? root.bgColor
+                    : (root.selectedGameGrayscaleDisabled ? root.inkBlack : root.inkFaint)
+                    Behavior on color { ColorAnimation { duration: 130 } }
+                }
+
+                MouseArea {
+                    id: grayscaleToggleHover
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    enabled: root.currentGame !== null
+                    onClicked: {
+                        sfx.playMove()
+                        root.selectedGameGrayscaleDisabled = !root.selectedGameGrayscaleDisabled
+                    }
                 }
             }
         }
 
         Rectangle {
             anchors.bottom: parent.bottom
-            width: parent.width; height: 1
+            width: parent.width
+            height: 1
             color: divColor
         }
     }
@@ -443,7 +514,7 @@ Item {
                 var g = root._resolveRealGame(currentIndex)
                 if (g) {
                     currentGame = g
-                    savedIndex  = currentIndex
+                    savedIndex = currentIndex
                 }
             }
         }
@@ -454,9 +525,11 @@ Item {
             height: vpx(80)
 
             readonly property bool isSelected: ListView.isCurrentItem
+            readonly property bool useGrayscale: isSelected ? !root.selectedGameGrayscaleDisabled : true
 
             Rectangle {
-                x: 0; y: 0
+                x: 0
+                y: 0
                 width: isSelected ? vpx(4) : 0
                 height: parent.height
                 color: inkBlack
@@ -483,6 +556,7 @@ Item {
                     fillMode: Image.PreserveAspectFit
                     visible: source !== ""
                     opacity: isSelected ? 1.0 : 0.55
+                    grayscaleEnabled: del.useGrayscale
                     Behavior on opacity { NumberAnimation { duration: 120 } }
                 }
             }
